@@ -117,3 +117,4 @@ kafka-python-ng
 PyQt6; sys_platform != "win32"
 six
 kafka-python-ng
+matplotlib
