@@ -1,6 +1,6 @@
-# buzzline-05-dobler
+# streaming_data_final_project
 
-My custom consumer reads real-time messages from a Kafka topic, extracts key insights, and stores them in a SQLite database. It processes messages one at a time, extracting sentiment scores and message categories, which can be used for trend analysis.
+My custom consumer listens to the "baseball-updates" Kafka topic and processes live baseball game events. It maintains a cumulative score for each team, updates a visual scoreboard, and stores the data in SQLite for future reference. The scoreboard dynamically updates with team colors, inning progress, and real-time game events such as home runs and strikeouts. At the end of each game, it declares the winner in bold on the scoreboard and resets for the next match.
 
 
 ## VS Code Extensions
