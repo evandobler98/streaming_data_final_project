@@ -1,100 +1,108 @@
-# Real-Time Baseball Streaming with Kafka
+# Streaming Data Final Project
 
-## Overview
-This project simulates real-time baseball game updates using Apache Kafka. The producer generates live baseball events (e.g., hits, home runs, strikeouts) and streams them to a Kafka topic called "baseball-updates". The consumer listens to this topic, processes game events, and visualizes them using a dynamic scoreboard.
+This project involves real-time streaming of baseball game updates using Kafka. My custom consumer listens to the "baseball-updates" Kafka topic, processes live baseball game events, and updates a dynamic scoreboard. The system maintains a cumulative score for each team, dynamically updates the scoreboard with team colors, inning progress, and real-time game events (such as home runs and strikeouts). At the end of each game, it declares the winner in bold and resets for the next match. Additionally, game data is stored in SQLite for future reference.
 
-At the end of each game, the consumer announces the winner and resets for the next match.
+## Table of Contents
 
-## Dependencies
+- [VS Code Extensions](#vs-code-extensions)
+- [Task 1: Manage Local Project Virtual Environment](#task-1-manage-local-project-virtual-environment)
+- [Task 2: Start Zookeeper and Kafka](#task-2-start-zookeeper-and-kafka-takes-2-terminals)
+- [Task 3: Start a New Streaming Application](#task-3-start-a-new-streaming-application)
+- [Save Space](#save-space)
 
-### 1. Install Python Virtual Environment
-A virtual environment isolates dependencies for this project.
+## VS Code Extensions
 
-```bash
-# Create virtual environment
-python3 -m venv .venv  
+Here are some useful VS Code extensions to enhance your experience:
 
-# Activate virtual environment
-# On Windows
-.venv\Scripts\activate
+- **Black Formatter** by Microsoft
+- **Markdown All in One** by Yu Zhang
+- **PowerShell** by Microsoft (for Windows users)
+- **Pylance** by Microsoft
+- **Python** by Microsoft
+- **Python Debugger** by Microsoft
+- **Ruff** by Astral Software (Linter)
+- **SQLite Viewer** by Florian Klampfer
+- **WSL** by Microsoft (for Windows users)
 
-# On macOS/Linux
-source .venv/bin/activate
-2. Install Required Packages
-Run the following command to install dependencies:
+## Task 1: Manage Local Project Virtual Environment
 
-bash
-Copy
-Edit
-pip install -r requirements.txt
-Setting Up Kafka Locally
-1. Start Zookeeper & Kafka
-If Kafka is not already running, start Zookeeper and Kafka using two terminals.
+To set up your virtual environment and install dependencies, follow these steps:
 
-Windows (PowerShell)
-bash
-Copy
-Edit
-# Terminal 1 - Start Zookeeper
-zookeeper-server-start.bat config\zookeeper.properties
+1. **Create the `.venv`**:
+    ```bash
+    python3 -m venv .venv
+    ```
 
-# Terminal 2 - Start Kafka
-kafka-server-start.bat config\server.properties
-macOS/Linux
-bash
-Copy
-Edit
-# Terminal 1 - Start Zookeeper
-bin/zookeeper-server-start.sh config/zookeeper.properties
+2. **Activate the virtual environment**:
+    - On **Windows**:
+        ```bash
+        .venv\Scripts\activate
+        ```
+    - On **macOS/Linux**:
+        ```bash
+        source .venv/bin/activate
+        ```
 
-# Terminal 2 - Start Kafka
-bin/kafka-server-start.sh config/server.properties
-Running the Producer & Consumer
-1. Start the Producer (Sends Baseball Events)
-The producer generates live baseball game updates and publishes them to Kafka.
+3. **Install the required dependencies** from `requirements.txt`:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-Windows
-bash
-Copy
-Edit
+## Task 2: Start Zookeeper and Kafka (Takes 2 Terminals)
+
+If Zookeeper and Kafka are not already running, you need to restart them. Follow the instructions in the [SETUP-KAFKA.md](https://github.com/denisecase/buzzline-02-case/blob/main/docs/SETUP-KAFKA.md) file for setting them up:
+
+1. **Start Zookeeper Service**  
+   [Setup Instructions](https://github.com/denisecase/buzzline-02-case/blob/main/docs/SETUP-KAFKA.md#step-7-start-zookeeper-service-terminal-1)
+
+2. **Start Kafka Service**  
+   [Setup Instructions](https://github.com/denisecase/buzzline-02-case/blob/main/docs/SETUP-KAFKA.md#step-8-start-kafka-terminal-2)
+
+## Task 3: Start a New Streaming Application
+
+This requires two additional terminals: one for the producer (which writes messages) and one for the consumer (which reads, processes, and writes messages to a data store).
+
+### Producer (Terminal 3)
+
+Start the producer to generate live messages. The producer writes to a live data file in the `data` folder, and if Zookeeper and Kafka are running, it will also write to a Kafka topic.
+
+To start the producer:
+
+1. Open a **new terminal** in VS Code.
+2. Activate the virtual environment and start the producer using the following commands:
+
+#### Windows:
+```shell
 .venv\Scripts\activate
 py -m producers.baseball_producer
-macOS/Linux
-bash
-Copy
-Edit
-source .venv/bin/activate
+```
+
+#### macOS/Linux:
+```source .venv/bin/activate
 python3 -m producers.baseball_producer
-2. Start the Consumer (Reads & Visualizes Games)
-The consumer listens to the "baseball-updates" Kafka topic, processes game events, and updates a real-time scoreboard.
+```
+Note: The producer will work even if Kafka is not available, but it will write to a data file instead of Kafka.
 
-Windows
-bash
-Copy
-Edit
-.venv\Scripts\activate
+#### Consumer (Terminal 4) - Two Options
+
+You have two options for the consumer:
+1. **Consumer reading from the live data file**
+2. **Consumer reading from the Kafka topic**
+
+To start the consumer:
+1. **Open a new terminal in your root project folder.**
+Activate the virtual environment and choose the consumer option you'd like to use.
+Windows:
+```.venv\Scripts\activate
 py -m consumers.baseball_consumer
-macOS/Linux
-bash
-Copy
-Edit
-source .venv/bin/activate
-python3 -m consumers.baseball_consumer
-Project Features
-✔ Real-time Data Streaming: Producer sends live game updates to Kafka.
-✔ Dynamic Scoreboard: Consumer updates the scoreboard as the game progresses.
-✔ Automatic Game Reset: The system resets after each game and starts a new match.
-✔ Kafka Integration: The project demonstrates how to work with Kafka topics for event-driven applications.
+```
 
-Troubleshooting
-Kafka Not Working?
-Run kafka-topics.sh --list --bootstrap-server localhost:9092 to verify Kafka is running.
-Check if Zookeeper is running (ps aux | grep zookeeper).
-Restart Kafka services and try again.
-Consumer Not Receiving Messages?
-Ensure the producer is running and sending messages.
-Confirm the topic "baseball-updates" exists:
-bash
-Copy
-Edit
-kafka-topics.sh --describe --topic baseball-updates --bootstrap-server local
+macOS/Linux:
+```source .venv/bin/activate
+python3 -m consumers.baseball_consumer
+```
+Save Space
+To save disk space when you're not actively working on the project:
+
+Delete the .venv folder.
+You can always recreate it later by following the steps to activate the virtual environment and reinstall the necessary packages.
