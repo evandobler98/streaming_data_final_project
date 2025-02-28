@@ -1,101 +1,100 @@
-# streaming_data_final_project
+# Real-Time Baseball Streaming with Kafka
 
-My custom consumer listens to the "baseball-updates" Kafka topic and processes live baseball game events. It maintains a cumulative score for each team, updates a visual scoreboard, and stores the data in SQLite for future reference. The scoreboard dynamically updates with team colors, inning progress, and real-time game events such as home runs and strikeouts. At the end of each game, it declares the winner in bold on the scoreboard and resets for the next match.
+## Overview
+This project simulates real-time baseball game updates using Apache Kafka. The producer generates live baseball events (e.g., hits, home runs, strikeouts) and streams them to a Kafka topic called "baseball-updates". The consumer listens to this topic, processes game events, and visualizes them using a dynamic scoreboard.
 
+At the end of each game, the consumer announces the winner and resets for the next match.
 
-## VS Code Extensions
+## Dependencies
 
-- Black Formatter by Microsoft
-- Markdown All in One by Yu Zhang
-- PowerShell by Microsoft (on Windows Machines)
-- Pylance by Microsoft
-- Python by Microsoft
-- Python Debugger by Microsoft
-- Ruff by Astral Software (Linter)
-- SQLite Viewer by Florian Klampfer
-- WSL by Microsoft (on Windows Machines)
+### 1. Install Python Virtual Environment
+A virtual environment isolates dependencies for this project.
 
+```bash
+# Create virtual environment
+python3 -m venv .venv  
 
-
-
-## Task 1. Manage Local Project Virtual Environment
-
-1. Create your .venv
-2. Activate .venv
-3. Install the required dependencies using requirements.txt.
-
-## Task 2. Start Zookeeper and Kafka (Takes 2 Terminals)
-
-If Zookeeper and Kafka are not already running, you'll need to restart them.
-See instructions at [SETUP-KAFKA.md] to:
-
-1. Start Zookeeper Service ([link](https://github.com/denisecase/buzzline-02-case/blob/main/docs/SETUP-KAFKA.md#step-7-start-zookeeper-service-terminal-1))
-2. Start Kafka Service ([link](https://github.com/denisecase/buzzline-02-case/blob/main/docs/SETUP-KAFKA.md#step-8-start-kafka-terminal-2))
-
----
-
-## Task 3. Start a New Streaming Application
-
-This will take two more terminals:
-
-1. One to run the producer which writes messages. 
-2. Another to run the consumer which reads messages, processes them, and writes them to a data store. 
-
-### Producer (Terminal 3) 
-
-Start the producer to generate the messages. 
-The existing producer writes messages to a live data file in the data folder.
-If Zookeeper and Kafka services are running, it will try to write them to a Kafka topic as well.
-For configuration details, see the .env file. 
-
-In VS Code, open a NEW terminal.
-Use the commands below to activate .venv, and start the producer. 
-
-Windows:
-
-```shell
+# Activate virtual environment
+# On Windows
 .venv\Scripts\activate
-py -m producers.producer_case
-```
 
-Mac/Linux:
-```zsh
+# On macOS/Linux
 source .venv/bin/activate
-python3 -m producers.producer_case
-```
+2. Install Required Packages
+Run the following command to install dependencies:
 
-The producer will still work if Kafka is not available.
+bash
+Copy
+Edit
+pip install -r requirements.txt
+Setting Up Kafka Locally
+1. Start Zookeeper & Kafka
+If Kafka is not already running, start Zookeeper and Kafka using two terminals.
 
-### Consumer (Terminal 4) - Two Options
+Windows (PowerShell)
+bash
+Copy
+Edit
+# Terminal 1 - Start Zookeeper
+zookeeper-server-start.bat config\zookeeper.properties
 
-Start an associated consumer. 
-You have two options. 
-1. Start the consumer that reads from the live data file.
-2. OR Start the consumer that reads from the Kafka topic.
+# Terminal 2 - Start Kafka
+kafka-server-start.bat config\server.properties
+macOS/Linux
+bash
+Copy
+Edit
+# Terminal 1 - Start Zookeeper
+bin/zookeeper-server-start.sh config/zookeeper.properties
 
-In VS Code, open a NEW terminal in your root project folder. 
-Use the commands below to activate .venv, and start the consumer. 
+# Terminal 2 - Start Kafka
+bin/kafka-server-start.sh config/server.properties
+Running the Producer & Consumer
+1. Start the Producer (Sends Baseball Events)
+The producer generates live baseball game updates and publishes them to Kafka.
 
-Windows:
-```shell
+Windows
+bash
+Copy
+Edit
 .venv\Scripts\activate
-py -m consumers.kafka_consumer_case
-OR
-py -m consumers.file_consumer_case
-```
-
-Mac/Linux:
-```zsh
+py -m producers.baseball_producer
+macOS/Linux
+bash
+Copy
+Edit
 source .venv/bin/activate
-python3 -m consumers.kafka_consumer_case
-OR
-python3 -m consumers.file_consumer_case
-```
+python3 -m producers.baseball_producer
+2. Start the Consumer (Reads & Visualizes Games)
+The consumer listens to the "baseball-updates" Kafka topic, processes game events, and updates a real-time scoreboard.
 
+Windows
+bash
+Copy
+Edit
+.venv\Scripts\activate
+py -m consumers.baseball_consumer
+macOS/Linux
+bash
+Copy
+Edit
+source .venv/bin/activate
+python3 -m consumers.baseball_consumer
+Project Features
+✔ Real-time Data Streaming: Producer sends live game updates to Kafka.
+✔ Dynamic Scoreboard: Consumer updates the scoreboard as the game progresses.
+✔ Automatic Game Reset: The system resets after each game and starts a new match.
+✔ Kafka Integration: The project demonstrates how to work with Kafka topics for event-driven applications.
 
-## Save Space
-To save disk space, you can delete the .venv folder when not actively working on this project.
-You can always recreate it, activate it, and reinstall the necessary packages later. 
-Managing Python virtual environments is a valuable skill. 
-
-
+Troubleshooting
+Kafka Not Working?
+Run kafka-topics.sh --list --bootstrap-server localhost:9092 to verify Kafka is running.
+Check if Zookeeper is running (ps aux | grep zookeeper).
+Restart Kafka services and try again.
+Consumer Not Receiving Messages?
+Ensure the producer is running and sending messages.
+Confirm the topic "baseball-updates" exists:
+bash
+Copy
+Edit
+kafka-topics.sh --describe --topic baseball-updates --bootstrap-server local
